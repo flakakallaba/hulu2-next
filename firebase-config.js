@@ -1,4 +1,7 @@
 import { initializeApp } from 'firebase/app';
+require('firebase/database');
+// second
+import {getFirestore} from "firebase/firestore"
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -12,7 +15,8 @@ const firebaseConfig = {
 
 // measurementId is for analyticss
 
-
-
-
 export const firebaseApp = initializeApp(firebaseConfig)
+
+//second
+const db = getFirestore();
+export {db}

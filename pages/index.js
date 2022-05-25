@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
+import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
+import requests from '../utils/request';
+import { db } from '../firebase-config'
+import { userAccessToken, fetchUser } from '../utils/fetchUserDetails';
+import { useRouter } from "next/router";
+
+
 import Head from 'next/head';
 import Header from '../components/Header.js';
 import Nav from '../components/Nav.js';
 import Results from '../components/Result.js';
-import requests from '../utils/request';
 
-import { userAccessToken, fetchUser } from '../utils/fetchUserDetails';
-import { useRouter } from "next/router";
+
 
 
 
@@ -15,25 +20,39 @@ export default function Home({ results }) {
   console.log(results)
   const router = useRouter();
   const [user, setUser] = useState({})
+  // second
+  const [movies, setMovies] = useState([])//
+
   useEffect(() => {
     const accessToken = userAccessToken();
     // console.log(accessToken)   
     if (accessToken === null) {
-     
-        router.push("/login");
 
+      router.push("/login");
     }
+
+    // second
+    const collectionRef = collection(db, "movies")
+    const unsubscribe = onSnapshot(collectionRef, (querySnapshot) => {
+      setMovies(querySnapshot.docs.map(doc => ({ ...doc.data() })))
+    });
+    return unsubscribe;
+    //
   }, []);
-  
+
   return (
     <div>
-      <Head>
-        <title>Hulu 2.9</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <Header />
-      <Nav />
-      <Results results={results} />
+     
+        <Head>
+          <title>Hulu 2.9</title>
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+        {/* <Movies movies={movies}/> */}
+        <Header />
+        <Nav />
+        <Results results={results} movies={movies} />
+
+
     </div>
   )
 }

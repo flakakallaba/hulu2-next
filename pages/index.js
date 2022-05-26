@@ -17,40 +17,45 @@ import Results from '../components/Result.js';
 
 //Client render
 export default function Home({ results }) {
-  console.log(results)
   const router = useRouter();
   const [user, setUser] = useState({})
   // second
   const [movies, setMovies] = useState([])//
+  const [userActivity, setActivity] = useState([]);
 
   useEffect(() => {
     const accessToken = userAccessToken();
-    // console.log(accessToken)   
+    // console.log(A)
     if (accessToken === null) {
-
       router.push("/login");
     }
 
+    const [userInfo] = fetchUser();
+    setUser(userInfo)
+
+    const userCollec = collection(db, "userActivity")
+    const usersubscribe = onSnapshot(userCollec, (querySnapshot) => {
+      setActivity(querySnapshot.docs.map(doc => ({ ...doc.data() })))
+    });
     // second
     const collectionRef = collection(db, "movies")
     const unsubscribe = onSnapshot(collectionRef, (querySnapshot) => {
       setMovies(querySnapshot.docs.map(doc => ({ ...doc.data() })))
     });
-    return unsubscribe;
+    return unsubscribe, usersubscribe;
     //
   }, []);
 
   return (
     <div>
-     
-        <Head>
-          <title>Hulu 2.9</title>
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
-        {/* <Movies movies={movies}/> */}
-        <Header />
-        <Nav />
-        <Results results={results} movies={movies} />
+
+      <Head>
+        <title>Hulu 2.9</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <Header />
+      <Nav />
+      <Results results={results} movies={movies} userActivity={userActivity} />
 
 
     </div>

@@ -9,45 +9,77 @@ import {
     orderBy,
     query,
     setDoc,
+    documentId,
     updateDoc,
 } from 'firebase/firestore';
 import request from '../utils/request';
 require('firebase/database');
+import { fetchUser } from '../utils/fetchUserDetails';
 
 
-const Thumbnail = forwardRef(({ result, movie }, ref) => {
+const Thumbnail = forwardRef(({ result, movie, userActivity }, ref) => {
     const BASE_URL = 'https://image.tmdb.org/t/p/original/';
 
     var [count, setCount] = useState(null);
     var [hasLiked, setLiked] = useState(false);
+    
+
+    
+    const [user, setUser] = useState([])
 
     useEffect(() => {
         if (movie) setCount(movie.total_votes);
         else setCount(0);
+        if (userActivity) setLiked(userActivity.user_upvote);
+        // else setLiked(false);
+        const [userInfo] = fetchUser();
     }, [movie]);
 
     const increaseCount = async (id) => {
         setCount((prevCount) => prevCount + 1);
+      
+        const [userInfo] = fetchUser();
+        setUser(userInfo)
         const docRef = doc(db, 'movies', id);
+        const userRef = doc(db, 'userActivity',id);
+    
         const upVote = {
             tmdb_id: result.id,
             tmdb_title: result.title || result.original_name,
             total_votes: count + 1,
         };
+        // setLiked((prevLiked) => true);
+        const activity = {
+            user_id: userInfo.uid,
+            user_movie_id: id,
+            user_upvote: true
+        };
         await setDoc(docRef, upVote);
+        await setDoc(userRef, activity);
         setLiked((prevLiked) => true);
+        
     };
     const decreaseCount = async (id) => {
         setCount((prevCount) => prevCount - 1);
+        // setLiked((prevLiked) => false);
+        const [userInfo] = fetchUser();
         const docRef = doc(db, 'movies', id);
+        const userRef = doc(db, 'userActivity', id);
         // const upVote = {tmdb_id: result.id, tmdb_title: result.title,total_votes: result.vote_count-=1 };
         const upVote = {
             tmdb_id: result.id,
             tmdb_title: result.title || result.original_name,
             total_votes: count - 1,
         };
+        const activity = {
+            user_id: userInfo.uid,
+            user_movie_id: id,
+            user_upvote: false
+        };
+     
         await setDoc(docRef, upVote);
-        setLiked((prevLiked) => false);
+        await setDoc(userRef, activity);
+        setLiked((prevLiked) => false);  
     };
     return (
         <div

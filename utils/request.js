@@ -1,6 +1,3 @@
-// make the request to the backend api
-
-// this is just a variable that calls API_KEY
 const API_KEY = process.env.API_KEY
 
 export default {

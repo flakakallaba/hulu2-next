@@ -67,8 +67,7 @@ export async function getServerSideProps(databaseconn) {
 
   return {
     props: {
-      results: request.results,
-
+      results: request.results
     },
   };
 }

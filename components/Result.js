@@ -3,7 +3,7 @@ import FlipMove from "react-flip-move";
 
 function Results({ results, movies }) {
 
-  console.log(movies)
+  // console.log(movies)
   // const array = Object.values(movies)
   // console.log(array.filter(a=> a.tmdb_id == 639933))
   return (

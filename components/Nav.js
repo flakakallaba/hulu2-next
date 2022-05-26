@@ -4,7 +4,7 @@ import requests from '../utils/request'
 
 
 function Nav() {
-    console.log(Object.entries(requests).map((page) => page.map(key => key.URL)))
+    // console.log(Object.entries(requests).map((page) => page.map(key => key.URL)))
     const router = useRouter()
     return (
         <nav className="relative">
